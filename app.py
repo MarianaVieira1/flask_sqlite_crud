@@ -4,7 +4,7 @@ from flasgger import Swagger
 
 app = Flask(__name__)
 
-# Configuração do SQLite
+# Configuração do SQLite a
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///escola.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
