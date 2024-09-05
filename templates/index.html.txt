@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de Alunos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form, table {
+            width: 80%;
+            margin: auto;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerenciamento de Alunos</h1>
+
+    <!-- Formulário para adicionar um aluno -->
+    <form id="alunoForm">
+        <h2>Adicionar Aluno</h2>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+        
+        <label for="idade">Idade:</label>
+        <input type="number" id="idade" name="idade" required>
+        
+        <label for="nota_primeiro_semestre">Nota Primeiro Semestre:</label>
+        <input type="number" step="0.1" id="nota_primeiro_semestre" name="nota_primeiro_semestre" required>
+        
+        <label for="nota_segundo_semestre">Nota Segundo Semestre:</label>
+        <input type="number" step="0.1" id="nota_segundo_semestre" name="nota_segundo_semestre" required>
+        
+        <label for="nome_professor">Nome do Professor:</label>
+        <input type="text" id="nome_professor" name="nome_professor" required>
+        
+        <label for="numero_sala">Número da Sala:</label>
+        <input type="text" id="numero_sala" name="numero_sala" required>
+        
+        <input type="submit" value="Adicionar Aluno">
+    </form>
+
+    <!-- Tabela para exibir os alunos -->
+    <h2>Lista de Alunos</h2>
+    <table id="alunosTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>Nota Primeiro Semestre</th>
+                <th>Nota Segundo Semestre</th>
+                <th>Nome do Professor</th>
+                <th>Número da Sala</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados dos alunos serão inseridos aqui pelo JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const alunoForm = document.getElementById('alunoForm');
+            const alunosTable = document.getElementById('alunosTable').getElementsByTagName('tbody')[0];
+
+            // Função para atualizar a tabela com a lista de alunos
+            function atualizarTabela() {
+                fetch('/alunos')
+                    .then(response => response.json())
+                    .then(alunos => {
+                        alunosTable.innerHTML = '';
+                        alunos.forEach(aluno => {
+                            const row = alunosTable.insertRow();
+                            row.insertCell().textContent = aluno.id;
+                            row.insertCell().textContent = aluno.nome;
+                            row.insertCell().textContent = aluno.idade;
+                            row.insertCell().textContent = aluno.nota_primeiro_semestre;
+                            row.insertCell().textContent = aluno.nota_segundo_semestre;
+                            row.insertCell().textContent = aluno.nome_professor;
+                            row.insertCell().textContent = aluno.numero_sala;
+                        });
+                    });
+            }
+
+            // Atualizar a tabela quando a página carrega
+            atualizarTabela();
+
+            // Adicionar um aluno
+            alunoForm.addEventListener('submit', event => {
+                event.preventDefault();
+
+                const formData = new FormData(alunoForm);
+                const aluno = {};
+                formData.forEach((value, key) => {
+                    aluno[key] = value;
+                });
+
+                fetch('/alunos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(aluno)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alunoForm.reset();
+                        atualizarTabela();
+                    } else {
+                        alert('Erro ao adicionar aluno');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
